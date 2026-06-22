@@ -5,10 +5,14 @@ if(${CMAKE_VERSION} VERSION_LESS 3.10)
 endif()
 
 # project information
+# The harness itself is compiled as C (so the BOLOS SDK's buffer.h, which is
+# C-only and no longer C++-clean, type-checks correctly). C++ is still enabled
+# so the executable can be linked with the C++ driver, which is required by the
+# libFuzzing engine (LIB_FUZZING_ENGINE) provided by ClusterFuzzLite.
 project(FuzzTxParser
         VERSION 1.0
 	      DESCRIPTION "Fuzzing of transaction parser"
-        LANGUAGES CXX)
+        LANGUAGES C CXX)
 
 # guard against bad build-type strings
 if (NOT CMAKE_BUILD_TYPE)
@@ -55,7 +59,11 @@ endif()
 
 include(extra/TxParser.cmake)
 
-add_executable(fuzz_tx_parser fuzz_tx_parser.cc)
+add_executable(fuzz_tx_parser fuzz_tx_parser.c)
+
+# Link with the C++ driver: the libFuzzing engine pulls in the C++ runtime even
+# though the harness translation unit is plain C.
+set_target_properties(fuzz_tx_parser PROPERTIES LINKER_LANGUAGE CXX)
 
 target_compile_options(fuzz_tx_parser
     PRIVATE ${COMPILATION_FLAGS}
