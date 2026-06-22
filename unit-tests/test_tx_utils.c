@@ -1,10 +1,11 @@
-#include <cmocka.h>
-#include <setjmp.h>
 #include <stdarg.h>
-#include <stdbool.h>
 #include <stddef.h>
+#include <setjmp.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+
+#include <cmocka.h>
 
 #include "transaction/types.h"
 #include "transaction/utils.h"
